@@ -1,15 +1,24 @@
 {
   "manifest_version": 3,
-  "name": "FamilySearch Szöveg Extractor",
-  "version": "1.0",
-  "description": "Kinyeri a FamilySearch adatokat szöveggé és vágólapra másolja.",
-  "permissions": ["scripting", "activeTab", "clipboardWrite"],
-  "action": {
-    "default_title": "Extract FamilySearch Data",
-    "default_icon": "icon.png"
-  },
+  "name": "FS Web Automate",
+  "version": "1.4.1",
+  "description": "Automates FS web data extraction.",
+  "permissions": ["clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
-  "host_permissions": ["<all_urls>"]
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "type": "module"
+    }
+  ],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
 }

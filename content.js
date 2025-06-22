@@ -1,4 +1,4 @@
-// version 1.4.1
+// version 1.5.0
 
 //import { processMarriageEvent, processBaptismOrBirth, processDeathRegistration } from './eventProcessing.js';
 
@@ -151,43 +151,63 @@
       links[th] = !!td.querySelector('a');
     }
   });
+  //debug only
+  //console.log(data)
 
   const name = data["név"] || "";
   const genderRaw = data["nem"] || "";
   const gender = genderRaw.toLowerCase();
-//  const birthYear = (data["születési év (becsült)"] || "").match(/\d{4}/)?.[0] || "";
+  let spouseName = data["házastárs neve"] || "";  
 // Find the first data key that starts with "születési"
   const szulKey = Object.keys(data).find(k => k.startsWith("születési"));
   const birthYear = (szulKey ? data[szulKey] : "").match(/\d{4}/)?.[0] || "";
   const deathYear = (data["elhalálozási dátum"] || "").match(/\d{4}/)?.[0] || "";
   const eventYear = (data["esemény dátuma"] || "").match(/\d{4}/)?.[0] || ""; 
 
+// Remove redundant last name from spouseName, if present
+  const personLastName = name.split(" ")[0];
+  const spouseParts = spouseName.split(" ");
+  if (spouseParts.length > 2 && spouseParts.includes(personLastName)) {
+    spouseParts.splice(spouseParts.indexOf(personLastName), 1);
+    spouseName = spouseParts.join(" ");
+  }
+
   const fiaLanya = (gender === "m" || gender === "male" || gender === "férfi") ? "fia" :
                    (gender === "f" || gender === "female" || gender === "női") ? "lánya" : "gyermeke";
+  const ferjeNeje = (gender === "m" || gender === "male" || gender === "férfi") ? "férje" :
+                   (gender === "f" || gender === "female" || gender === "női") ? "neje" : "házastársa";
 
   const persons = [
-    { key: "gyermek", label: name ? `${name} (${birthYear})` : "", sourceKey: "név" },
-    { key: "apa", label: data["apa neve"] ? `${data["apa neve"]} (apa)` : "", sourceKey: "apa neve" },
-    { key: "anya", label: data["anya neve"] ? `${data["anya neve"]} (anya)` : "", sourceKey: "anya neve" }
-  ].filter(p => p.label && !p.label.includes("undefined") && p.label.trim() !== "()");
+  { key: "gyermek", label: name ? `${name} (${birthYear})` : "", sourceKey: "név" },
+  { key: "apa", label: data["apa neve"] ? `${data["apa neve"]} (apa)` : "", sourceKey: "apa neve" },
+  { key: "anya", label: data["anya neve"] ? `${data["anya neve"]} (anya)` : "", sourceKey: "anya neve" },
+  { key: "házastárs", label: data["házastárs neve"] ? `${data["házastárs neve"]} (házastárs)` : "", sourceKey: "házastárs neve" }
+].filter(p => p.label && !p.label.includes("undefined") && p.label.trim() !== "()");
+//debug only
+//console.log(persons) 
 
   const noLinkEntries = persons.filter(p => links[p.sourceKey] === false);
-  const defaultPersonKey = noLinkEntries.length === 1 ? noLinkEntries[0].key : null;
+  const defaultPersonKey = noLinkEntries.length === 1 ? noLinkEntries[0].key : null; 
 
-  const outputs = persons.map(p => {
-    let out = "";
-    if (p.key === "gyermek") {
-      out = `${name} ${birthYear} hlakv ${eventYear} (${deathYear})`;
-    } else {
-      const parentName = data[p.key + " neve"];
-      out = `${parentName} itt ${fiaLanya} ${name} ${birthYear} hlakv ${eventYear} (${deathYear})`;
-    }
-    return {
-      label: p.label,
-      isDefault: p.key === defaultPersonKey,
-      output: out
-    };
-  });
+const outputs = persons.map(p => {
+  let out = "";
+  if (p.key === "gyermek") {
+    out = `${name} ${birthYear} hlakv ${eventYear} (${deathYear})`;
+  } else if (p.key === "házastárs") {
+//    const spouseName = data["házastárs neve"];
+    out = `${spouseName} itt ${ferjeNeje} ${name} ${birthYear} hlakv ${eventYear} (${deathYear})`;
+  } else {
+    const parentName = data[p.key + " neve"];
+    out = `${parentName} itt ${fiaLanya} ${name} ${birthYear} hlakv ${eventYear} (${deathYear})`;
+  }
+  return {
+    label: p.label,
+    isDefault: p.key === defaultPersonKey,
+    output: out
+  };
+});
+//debug only
+//console.log(outputs)
 
   return outputs;
 }
@@ -198,9 +218,14 @@
     // Build prompt message
     const defaultIdx = choices.findIndex(c => c.isDefault);
     let promptMsg = "Válassz egy opciót a következők közül:\n";
-    promptMsg += choices.map((c, i) =>
-      `${i + 1}. ${c.label}${c.isDefault ? " [alapértelmezett]" : ""}\n${c.output}`
-    ).join("\n\n");
+    const OUTPUT_MAXLEN = 100; // or another reasonable value
+    promptMsg += choices.map((c, i) => {
+      let shortOutput = c.output;
+      if (shortOutput.length > OUTPUT_MAXLEN) {
+      shortOutput = shortOutput.slice(0, OUTPUT_MAXLEN - 3) + "...";
+    }
+    return `${i + 1}. ${c.label}${c.isDefault ? " [alapértelmezett]" : ""}\n${shortOutput}`;
+    }).join("\n\n");
     promptMsg += `\n\nÍrd be a sorszámot (1-${choices.length}), vagy nyomj Enter az alapértelmezett kiválasztásához (${defaultIdx + 1}):`;
 
     // Show prompt and get input
@@ -292,6 +317,7 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
     promptUserToSelectAndCopy(choices);
   } else if (["death registration"].some(k => eventType.includes(k))) {
     const choices = processDeathRegistration();
+//	console.log('Choices passed to promptUserToSelectAndCopy:', choices);
     promptUserToSelectAndCopy(choices);
   } else {
     alert(`Esemény típusa: ${eventTypeRaw}\n(Nem támogatott még ebben a verzióban.)`);

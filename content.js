@@ -155,9 +155,12 @@
   const name = data["név"] || "";
   const genderRaw = data["nem"] || "";
   const gender = genderRaw.toLowerCase();
-  const birthYear = (data["születési év (becsült)"] || "").match(/\d{4}/)?.[0] || "";
+//  const birthYear = (data["születési év (becsült)"] || "").match(/\d{4}/)?.[0] || "";
+// Find the first data key that starts with "születési"
+  const szulKey = Object.keys(data).find(k => k.startsWith("születési"));
+  const birthYear = (szulKey ? data[szulKey] : "").match(/\d{4}/)?.[0] || "";
   const deathYear = (data["elhalálozási dátum"] || "").match(/\d{4}/)?.[0] || "";
-  const eventYear = (data["esemény dátuma"] || "").match(/\d{4}/)?.[0] || "";
+  const eventYear = (data["esemény dátuma"] || "").match(/\d{4}/)?.[0] || ""; 
 
   const fiaLanya = (gender === "m" || gender === "male" || gender === "férfi") ? "fia" :
                    (gender === "f" || gender === "female" || gender === "női") ? "lánya" : "gyermeke";
@@ -203,12 +206,18 @@
     // Show prompt and get input
     let userInput = prompt(promptMsg, "");
     let idx;
-    if ((!userInput || userInput.trim() === "") && defaultIdx !== -1) {
-      idx = defaultIdx;
+    if (userInput === null) {
+     // User clicked Cancel or pressed ESC
+     // Handle this as you wish; for example, choose a special value, or treat as "default", or abort
+     // alert("Művelet megszakítva (ESC vagy Mégse).");
+     idx = -1;
+	 return;
+    } else if (userInput.trim() === "" && defaultIdx !== -1) {
+    // User pressed ENTER (default)
+    idx = defaultIdx;
     } else {
-      idx = parseInt(userInput) - 1;
+     idx = parseInt(userInput) - 1;
     }
-
     // Validate input
     if (isNaN(idx) || idx < 0 || idx >= choices.length) {
       alert("Nincs érvényes kiválasztás. Kilépés.");
@@ -217,9 +226,57 @@
 
     // Copy selected output and show on screen
     navigator.clipboard.writeText(choices[idx].output).then(() =>
-      alert("Kiválasztott szöveg a vágólapra másolva:\n\n" + choices[idx].output)
+      // alert("Kiválasztott szöveg a vágólapra másolva:\n\n" + choices[idx].output)
+	  // call action simulation and data fill
+	  simulateEditAndFillSourceTitle(choices[idx].output)
     );
+	
   }
+
+function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg átírása?") {
+  // 1. Find visible 'Szerkesztés' (Edit) button and click it
+  const buttons = Array.from(document.querySelectorAll('button[data-testid^="source-button_edit"]'));
+  const visibleButton = buttons.find(btn =>
+    btn.offsetParent !== null &&
+    !btn.disabled &&
+    btn.getBoundingClientRect().height > 0
+  );
+
+  if (visibleButton) {
+    visibleButton.click();
+  } else {
+    alert("Nem található látható, aktív 'Szerkesztés' gomb.");
+    return;
+  }
+
+  // 2. Fill in the input and save, with delay for edit field to appear
+  setTimeout(() => {
+    const input = document.querySelector('input[data-testid="source-title-field"]');
+    if (input) {
+      input.value = newValue;
+      // Trigger input events to simulate user typing
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    } else {
+      alert("Nem található a 'Forrás címe' mező.");
+      return;
+    }
+
+    // 3. Find and click the Save button
+    const saveButton = document.querySelector('[data-testid="source-save-button"]');
+    if (
+      saveButton &&
+      !saveButton.disabled &&
+      saveButton.offsetParent !== null &&
+      saveButton.getBoundingClientRect().height > 0
+    ) {
+      saveButton.click();
+    } else {
+      alert("A 'Mentés' gomb nem aktív vagy nem található.");
+    }
+  }, 1000); // Wait 2 seconds for the field to appear
+}
+
 
   // --- FUTÁS ---
   const eventTypeRaw = detectEventType();

@@ -3,22 +3,14 @@
   "name": "FS Web Automate",
   "version": "1.4.1",
   "description": "Automates FS web data extraction.",
-  "permissions": ["clipboardWrite"],
+  "permissions": ["scripting", "activeTab", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Extract and fill FamilySearch Data",
+    "default_icon": "icon128.png" 
+  },	
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "type": "module"
-    }
-  ],
-  "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+    "service_worker": "background.js"
   }
+
 }

@@ -1,0 +1,21 @@
+FS web automate 1.5.0
+Chrome plugin
+Copies data from the Family Search website and writes it back to the database.
+
+Installation:
+The files must be copied to a folder of your choice. In the Chrome browser, you can add them by selecting the folder from the "Load unpacked items" menu in the Extensions window.
+Then, in the installed plugin settings, you must enable the "Pin to toolbar" option, then the plugin launcher icon will appear.
+In addition to or instead of this, you can also use a hotkey launch.
+
+Usage:
+On the FamilySearch page, after logging in, it will only work on the Sources tab on the page of a person. Here too, only if at least one of the listed sources is open (clicking on the source title opens it) and contains indexed data.
+Then, after starting the plugin (clicking on the icon or hotkey), it reads the indexed data and gives a selection list from the source naming options formed from them. If possible, there will always be a default line that names the source in relation to the current person.
+The selected source name is then entered into the source title:
+- you can select with a number and ENTER/OK,
+- if you do not select anything, just press ENTER and the default line will be selected
+- if you press CANCEL/ESC, no data will be written back
+
+So the fastest way to use it is to start it with a hotkey, then ENTER.
+
+Liability: the app is made to the best of my knowledge, it does not contain any harmful code, its use is voluntary, there may be errors, everyone can use it at their own risk.
+Copyright: freely modifiable, with source indication.

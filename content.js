@@ -22,7 +22,7 @@
 
   // Gather data and link presence
   rows.forEach(row => {
-    const th = row.querySelector('th')?.innerText?.trim();
+    const th = row.querySelector('th')?.innerText?.trim().toLowerCase();
     const td = row.querySelector('td');
     const value = td?.innerText?.trim();
     if (th && value) {
@@ -31,11 +31,11 @@
     }
   });
 
-  const personName = data["Név"] || "";
-  const personYear = data["Születési dátum"] || "";
-  let spouseName = data["Házastárs neve"] || "";
-  const spouseYear = data["Házastárs születési dátuma"] || "";
-  const marriageDate = data["Esemény dátuma"] || "";
+  const personName = data["név"] || "";
+  const personYear = data["születési dátum"] || "";
+  let spouseName = data["házastárs neve"] || "";
+  const spouseYear = data["házastárs születési dátuma"] || "";
+  const marriageDate = data["esemény dátuma"] || "";
 
   // Remove redundant last name from spouseName, if present
   const personLastName = personName.split(" ")[0];
@@ -49,12 +49,12 @@
 
   // Define relevant persons
   const persons = [
-    { key: "vőlegény",        label: personName,                 sourceKey: "Név",                          suffix: "(fő személy)" },
-    { key: "menyasszony",     label: spouseName,                 sourceKey: "Házastárs neve",               suffix: "(házastárs)" },
-    { key: "apa",             label: data["Apa neve"] || "",     sourceKey: "Apa neve",                     suffix: "(apa)" },
-    { key: "anya",            label: data["Anya neve"] || "",    sourceKey: "Anya neve",                    suffix: "(anya)" },
-    { key: "házastárs apja",  label: data["Házastárs apjának neve"] || "", sourceKey: "Házastárs apjának neve", suffix: "(házastárs apja)" },
-    { key: "házastárs anyja", label: data["Házastárs anyjának neve"] || "", sourceKey: "Házastárs anyjának neve", suffix: "(házastárs anyja)" }
+    { key: "vőlegény",        label: personName,                 sourceKey: "név",                          suffix: "(fő személy)" },
+    { key: "menyasszony",     label: spouseName,                 sourceKey: "házastárs neve",               suffix: "(házastárs)" },
+    { key: "apa",             label: data["apa neve"] || "",     sourceKey: "apa neve",                     suffix: "(apa)" },
+    { key: "anya",            label: data["anya neve"] || "",    sourceKey: "anya neve",                    suffix: "(anya)" },
+    { key: "házastárs apja",  label: data["házastárs apjának neve"] || "", sourceKey: "házastárs apjának neve", suffix: "(házastárs apja)" },
+    { key: "házastárs anyja", label: data["házastárs anyjának neve"] || "", sourceKey: "házastárs anyjának neve", suffix: "(házastárs anyja)" }
   ].filter(p => p.label && !p.label.includes("undefined") && p.label.trim() !== "()");
 
   // Find default person (the only one without a link, if any)
@@ -67,9 +67,9 @@
     if (p.key === "vőlegény" || p.key === "menyasszony") {
       out = `${personName} ${personYear} és ${spouseName} ${spouseYear} hzakv ${marriageYear}`;
     } else if (p.key === "apa" || p.key === "anya") {
-      out = `${data[p.key === "apa" ? "Apa neve" : "Anya neve"]} itt fia ${personName} ${personYear} és ${spouseName} ${spouseYear} hzakv ${marriageYear}`;
+      out = `${data[p.key === "apa" ? "apa neve" : "anya neve"]} itt fia ${personName} ${personYear} és ${spouseName} ${spouseYear} hzakv ${marriageYear}`;
     } else if (p.key === "házastárs apja" || p.key === "házastárs anyja") {
-      const other = p.key === "házastárs apja" ? "Házastárs apjának neve" : "Házastárs anyjának neve";
+      const other = p.key === "házastárs apja" ? "házastárs apjának neve" : "házastárs anyjának neve";
       out = `${data[other]} itt lánya ${spouseName} ${spouseYear} és ${personName} ${personYear} hzakv ${marriageYear}`;
     }
     return {

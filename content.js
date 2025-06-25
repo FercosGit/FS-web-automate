@@ -343,7 +343,7 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
   } else if (["baptism", "keresztelő", "birth registration"].some(k => eventType.includes(k))) {
     const choices = processBaptismOrBirth();
     promptUserToSelectAndCopy(choices);
-    sendStatisticEvent("baptism_count");	  
+    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));  
   } else if (["death registration", "burial"].some(k => eventType.includes(k))) {
     const choices = processDeathRegistration();
 //	console.log('Choices passed to promptUserToSelectAndCopy:', choices);

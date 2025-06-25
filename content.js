@@ -340,15 +340,18 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
   } else if (["házasság", "marriage"].some(k => eventType.includes(k))) {
     const choices = processMarriageEvent();
     promptUserToSelectAndCopy(choices);
+    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));
   } else if (["baptism", "keresztelő", "birth registration"].some(k => eventType.includes(k))) {
     const choices = processBaptismOrBirth();
     promptUserToSelectAndCopy(choices);
     sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));  
   } else if (["death registration", "burial"].some(k => eventType.includes(k))) {
     const choices = processDeathRegistration();
+    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));
 //	console.log('Choices passed to promptUserToSelectAndCopy:', choices);
     promptUserToSelectAndCopy(choices);
   } else {
     alert(`Esemény típusa: ${eventTypeRaw}\n(Nem támogatott még ebben a verzióban.)`);
+    sendStatisticEvent("unsopported_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));
   }
 })();

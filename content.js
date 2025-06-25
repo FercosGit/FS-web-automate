@@ -2,6 +2,15 @@
 
 
 (function () {
+
+function sendStatisticEvent(eventName) {
+  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "event=" + encodeURIComponent(eventName)
+  }).catch(err => console.warn("Tracker failed", err));
+}
+	
   function detectEventType() {
     const rows = document.querySelectorAll('table tr');
     for (const row of rows) {
@@ -81,14 +90,7 @@
     };
   });
 
-  //statistic
-  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: "event=rmarriage_count"
-  }).catch(err => console.warn("Tracker failed", err));
-
-  return outputs;
+ return outputs;
 }
 
   function processBaptismOrBirth() {
@@ -149,14 +151,7 @@
 	
   });
 
-  //statistic
-  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: "event=baptism_count"
-  }).catch(err => console.warn("Tracker failed", err));
-
-  return outputs;
+ return outputs;
 }
 
   function processDeathRegistration() {
@@ -241,14 +236,7 @@ const outputs = persons.map(p => {
 //debug only
 //console.log(outputs)
 
-  //statistic
-  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: "event=deathreg_count"
-  }).catch(err => console.warn("Tracker failed", err));
-
-  return outputs;
+return outputs;
 }
 
   function promptUserToSelectAndCopy(choices) {
@@ -340,13 +328,6 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
     }
   }, 1000); // Wait 2 seconds for the field to appear
   
-  //statistic
-  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: "event=run_count"
-  }).catch(err => console.warn("Tracker failed", err));
-
 }
 
 
@@ -362,6 +343,7 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
   } else if (["baptism", "keresztelő", "birth registration"].some(k => eventType.includes(k))) {
     const choices = processBaptismOrBirth();
     promptUserToSelectAndCopy(choices);
+    sendStatisticEvent("baptism_count");	  
   } else if (["death registration", "burial"].some(k => eventType.includes(k))) {
     const choices = processDeathRegistration();
 //	console.log('Choices passed to promptUserToSelectAndCopy:', choices);

@@ -1,6 +1,5 @@
-// version 1.5.0
+// version 1.5.2
 
-//import { processMarriageEvent, processBaptismOrBirth, processDeathRegistration } from './eventProcessing.js';
 
 (function () {
   function detectEventType() {
@@ -30,6 +29,9 @@
       links[th] = !!td.querySelector('a');
     }
   });
+
+  //debug only
+  console.log(data)
 
   const personName = data["név"] || "";
   const personYear = data["születési dátum"] || "";
@@ -79,6 +81,13 @@
     };
   });
 
+  //statistic
+  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: "event=rmarriage_count"
+  }).catch(err => console.warn("Tracker failed", err));
+
   return outputs;
 }
 
@@ -87,6 +96,7 @@
   const data = {};
   const links = {};
 
+  // Gather data and link presence
   rows.forEach(row => {
     const th = row.querySelector('th')?.innerText?.trim().toLowerCase();
     const td = row.querySelector('td');
@@ -96,6 +106,9 @@
       links[th] = !!td.querySelector('a');
     }
   });
+  
+  //debug only
+  console.log(data)
 
   const name = data["név"] || "";
   const genderRaw = data["nem"] || "";
@@ -132,7 +145,16 @@
       isDefault: p.key === defaultPersonKey,
       output: out
     };
+	
+	
   });
+
+  //statistic
+  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: "event=baptism_count"
+  }).catch(err => console.warn("Tracker failed", err));
 
   return outputs;
 }
@@ -142,17 +164,27 @@
   const data = {};
   const links = {};
 
+  // Gather data and link presence exclude double blocks
   rows.forEach(row => {
-    const th = row.querySelector('th')?.innerText?.trim().toLowerCase();
-    const td = row.querySelector('td');
-    const value = td?.innerText?.trim();
-    if (th && value) {
-      data[th] = value;
-      links[th] = !!td.querySelector('a');
-    }
+  const th = row.querySelector('th')?.innerText?.trim().toLowerCase();
+  const td = row.querySelector('td');
+  const value = td?.innerText?.trim();
+
+  if (th === "név" && value) {
+    // Új rekord kezdete: eddigi adatokat töröljük
+    Object.keys(data).forEach(k => delete data[k]);
+    Object.keys(links).forEach(k => delete links[k]);
+  }
+
+  if (th && value) {
+    data[th] = value;
+    links[th] = !!td.querySelector('a');
+  }
   });
+
+  
   //debug only
-  //console.log(data)
+  console.log(data)
 
   const name = data["név"] || "";
   const genderRaw = data["nem"] || "";
@@ -208,6 +240,13 @@ const outputs = persons.map(p => {
 });
 //debug only
 //console.log(outputs)
+
+  //statistic
+  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: "event=deathreg_count"
+  }).catch(err => console.warn("Tracker failed", err));
 
   return outputs;
 }
@@ -300,6 +339,14 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
       alert("A 'Mentés' gomb nem aktív vagy nem található.");
     }
   }, 1000); // Wait 2 seconds for the field to appear
+  
+  //statistic
+  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: "event=run_count"
+  }).catch(err => console.warn("Tracker failed", err));
+
 }
 
 
@@ -315,7 +362,7 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
   } else if (["baptism", "keresztelő", "birth registration"].some(k => eventType.includes(k))) {
     const choices = processBaptismOrBirth();
     promptUserToSelectAndCopy(choices);
-  } else if (["death registration"].some(k => eventType.includes(k))) {
+  } else if (["death registration", "burial"].some(k => eventType.includes(k))) {
     const choices = processDeathRegistration();
 //	console.log('Choices passed to promptUserToSelectAndCopy:', choices);
     promptUserToSelectAndCopy(choices);

@@ -1,0 +1,31 @@
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const eventName = e.parameter.event;
+
+  if (!eventName) {
+    return ContentService.createTextOutput("Missing 'event' parameter").setMimeType(ContentService.MimeType.TEXT);
+  }
+
+  const range = sheet.getRange("A1:A");
+  const values = range.getValues();
+  let found = false;
+
+  for (let i = 0; i < values.length; i++) {
+    if (values[i][0] === eventName) {
+      const countCell = sheet.getRange(i + 1, 2);
+      const current = parseInt(countCell.getValue()) || 0;
+      countCell.setValue(current + 1);
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
+    // új sor beszúrása
+    const lastRow = sheet.getLastRow() + 1;
+    sheet.getRange(lastRow, 1).setValue(eventName);
+    sheet.getRange(lastRow, 2).setValue(1);
+  }
+
+  return ContentService.createTextOutput("OK").setMimeType(ContentService.MimeType.TEXT);
+}

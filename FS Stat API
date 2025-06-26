@@ -1,14 +1,32 @@
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const eventName = e.parameter.event;
+  let eventName = e.parameter.event;
+  const baseUrl = e.parameter.url;
 
   if (!eventName) {
     return ContentService.createTextOutput("Missing 'event' parameter").setMimeType(ContentService.MimeType.TEXT);
   }
 
+  // -- Engedélyezett URL-ek listája (bővíthető)
+  const allowedBaseUrls = [
+    "https://www.familysearch.org/hu/tree/person/sources/",  // pl. FamilySearch-URL sablon
+    "https://exampleabcdefghijkl.com/app"              // más URL is felvehető
+  ];
+
+
+
+  // -- URL ellenőrzés
+  const isAllowed = allowedBaseUrls.some(prefix => baseUrl && baseUrl.startsWith(prefix));
+  if (!isAllowed) {
+    eventName = "unauth_access";
+  }
+
+  // -- Naplózás (mint korábban)
   const range = sheet.getRange("A1:A");
   const values = range.getValues();
   let found = false;
+
+  Logger.log(JSON.stringify(e.parameter));
 
   for (let i = 0; i < values.length; i++) {
     if (values[i][0] === eventName) {
@@ -21,7 +39,6 @@ function doPost(e) {
   }
 
   if (!found) {
-    // új sor beszúrása
     const lastRow = sheet.getLastRow() + 1;
     sheet.getRange(lastRow, 1).setValue(eventName);
     sheet.getRange(lastRow, 2).setValue(1);

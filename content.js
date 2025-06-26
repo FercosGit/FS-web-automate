@@ -1,4 +1,4 @@
-// version 1.5.2
+// version 1.5.4
 
 
 (function () {
@@ -39,6 +39,13 @@ function sendStatisticEvent(eventName, url) {
     const th = row.querySelector('th')?.innerText?.trim().toLowerCase();
     const td = row.querySelector('td');
     const value = td?.innerText?.trim();
+	
+	 if (th === "név" && value) {
+    // Új rekord kezdete: eddigi adatokat töröljük
+    Object.keys(data).forEach(k => delete data[k]);
+    Object.keys(links).forEach(k => delete links[k]);
+    }
+
     if (th && value) {
       data[th] = value;
       links[th] = !!td.querySelector('a');
@@ -109,6 +116,13 @@ function sendStatisticEvent(eventName, url) {
     const th = row.querySelector('th')?.innerText?.trim().toLowerCase();
     const td = row.querySelector('td');
     const value = td?.innerText?.trim();
+	
+	if (th === "név" && value) {
+    // Új rekord kezdete: eddigi adatokat töröljük
+    Object.keys(data).forEach(k => delete data[k]);
+    Object.keys(links).forEach(k => delete links[k]);
+    }
+
     if (th && value) {
       data[th] = value;
       links[th] = !!td.querySelector('a');

@@ -3,23 +3,18 @@
 
 (function () {
 
-function sendStatisticEvent(eventName) {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    if (tabs.length === 0) return;
+function sendStatisticEvent(eventName, url) {
+  const baseUrl = url.split("/").slice(0, -1).join("/");
 
-    const fullUrl = tabs[0].url || "";
-    const baseUrl = fullUrl.split("/").slice(0, -1).join("/");
+  const params = new URLSearchParams();
+  params.append("event", eventName);
+  params.append("url", baseUrl);
 
-    const params = new URLSearchParams();
-    params.append("event", eventName);
-    params.append("url", baseUrl);
-
-    fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString()
-    }).catch(err => console.warn("Tracker failed", err));
-  });
+  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  }).catch(err => console.warn("Tracker failed", err));
 }
 	
   function detectEventType() {
@@ -351,18 +346,18 @@ function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg á
   } else if (["házasság", "marriage"].some(k => eventType.includes(k))) {
     const choices = processMarriageEvent();
     promptUserToSelectAndCopy(choices);
-    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));
+    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"), window.location.href);
   } else if (["baptism", "keresztelő", "birth registration"].some(k => eventType.includes(k))) {
     const choices = processBaptismOrBirth();
     promptUserToSelectAndCopy(choices);
-    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));  
+    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"), window.location.href);  
   } else if (["death registration", "burial"].some(k => eventType.includes(k))) {
     const choices = processDeathRegistration();
-    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));
 //	console.log('Choices passed to promptUserToSelectAndCopy:', choices);
     promptUserToSelectAndCopy(choices);
+    sendStatisticEvent("resolved_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"), window.location.href);
   } else {
     alert(`Esemény típusa: ${eventTypeRaw}\n(Nem támogatott még ebben a verzióban.)`);
-    sendStatisticEvent("unsopported_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"));
+    sendStatisticEvent("unsopported_event_" + eventTypeRaw.trim().toLowerCase().replace(/\s+/g, "_"), window.location.href);
   }
 })();

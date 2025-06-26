@@ -4,11 +4,22 @@
 (function () {
 
 function sendStatisticEvent(eventName) {
-  fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "event=" + encodeURIComponent(eventName)
-  }).catch(err => console.warn("Tracker failed", err));
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (tabs.length === 0) return;
+
+    const fullUrl = tabs[0].url || "";
+    const baseUrl = fullUrl.split("/").slice(0, -1).join("/");
+
+    const params = new URLSearchParams();
+    params.append("event", eventName);
+    params.append("url", baseUrl);
+
+    fetch("https://script.google.com/macros/s/AKfycbyRVTp97VB0xbve8biOZ5-A-y0VcdGaNxoVWMOntH685oGx5KV0Frqa_iLbkkaJifJApg/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString()
+    }).catch(err => console.warn("Tracker failed", err));
+  });
 }
 	
   function detectEventType() {

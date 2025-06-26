@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "FS Web Automate",
-  "version": "1.5.0",
+  "version": "1.5.4",
   "description": "Automates FS web data extraction.",
   "permissions": ["scripting", "activeTab", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],

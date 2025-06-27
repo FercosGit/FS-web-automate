@@ -1,7 +1,16 @@
 // version 1.5.4 refactored by GitHub Co-pilot
+// option handling test
 
 (function () {
 
+ function getAutoSaveEnabled() {
+  return new Promise(resolve => {
+    chrome.storage.local.get('autoSaveEnabled', data => {
+      resolve(!!data.autoSaveEnabled);
+    });
+  });
+}
+ 
   function sendStatisticEvent(eventName, url) {
     const baseUrl = url.split("/").slice(0, -1).join("/");
     const params = new URLSearchParams();
@@ -306,17 +315,19 @@
 
       // 3. Find and click the Save button
       // this block execution must depend on autoSaveEnabled option from options.html and options.js
-      const saveButton = document.querySelector('[data-testid="source-save-button"]');
-      if (
-        saveButton &&
-        !saveButton.disabled &&
-        saveButton.offsetParent !== null &&
-        saveButton.getBoundingClientRect().height > 0
-      ) {
-        saveButton.click();
-      } else {
-        alert("A 'Mentés' gomb nem aktív vagy nem található.");
-      }
+if (await getAutoSaveEnabled()) {
+  const saveButton = document.querySelector('[data-testid="source-save-button"]');
+  if (
+    saveButton &&
+    !saveButton.disabled &&
+    saveButton.offsetParent !== null &&
+    saveButton.getBoundingClientRect().height > 0
+  ) {
+    saveButton.click();
+  } else {
+    alert("A 'Mentés' gomb nem aktív vagy nem található.");
+  }
+}
     }, 1000);
   }
 

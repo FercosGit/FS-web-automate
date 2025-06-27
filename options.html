@@ -21,23 +21,7 @@
     Automatikus mentés engedélyezése (ha nem, akkor lesz lehetőség a generált szöveget szerkeszteni)
   </label>
 
-  <script>
-    // Alapértelmezett értékek betöltése
-    document.addEventListener('DOMContentLoaded', () => {
-      chrome.storage.local.get(["userPromptEnabled", "autoSaveEnabled"], (result) => {
-        document.getElementById("userPromptEnabled").checked = result.userPromptEnabled ?? true;
-        document.getElementById("autoSaveEnabled").checked = result.autoSaveEnabled ?? true;
-      });
-    });
-
-    // Mentés változás esetén
-    document.getElementById("userPromptlEnabled").addEventListener("change", (e) => {
-      chrome.storage.local.set({ userPromptEnabled: e.target.checked });
-    });
-
-    document.getElementById("autoSaveEnabled").addEventListener("change", (e) => {
-      chrome.storage.local.set({ autoSaveEnabled: e.target.checked });
-    });
-  </script>
+<script src="options.js"></script>
+  
 </body>
 </html>

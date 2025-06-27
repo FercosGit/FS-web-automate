@@ -256,7 +256,7 @@
     });
   }
 
-  function promptUserToSelectAndCopy(choices) {
+  async function promptUserToSelectAndCopy(choices) {
     if (!choices || choices.length === 0) return;
 
     const defaultIdx = choices.findIndex(c => c.isDefault);
@@ -273,7 +273,14 @@
     }).join("\n\n");
     promptMsg += `\n\nÍrd be a sorszámot (1-${choices.length}), vagy nyomj Enter az alapértelmezett kiválasztásához (${defaultIdx + 1}):`;
 
-    let userInput = prompt(promptMsg, "");
+let userInput;
+if (await getUserPromptEnabled()) {
+  // userPromptEnabled is true, show prompt
+  userInput = prompt(promptMsg, "");
+} else {
+  // userPromptEnabled is false, skip prompt and set userInput to ""
+  userInput = "";
+}
 // here ends user input
    
     let idx;

@@ -3,7 +3,7 @@
   "name": "FS Web Automate",
   "version": "1.5.4.1",
   "description": "Automates FS web data extraction.",
-  "permissions": ["scripting", "activeTab", "clipboardWrite"],
+  "permissions": ["storage", "scripting", "activeTab", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
   "options_page": "options.html",
   "action": {

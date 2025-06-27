@@ -3,6 +3,14 @@
 
 (function () {
 
+ function getUserPromptEnabled() {
+  return new Promise(resolve => {
+    chrome.storage.local.get('userPromptEnabled', data => {
+      resolve(data.userPromptEnabled !== false); // default to true
+    });
+  });
+}
+ 
  function getAutoSaveEnabled() {
   return new Promise(resolve => {
     chrome.storage.local.get('autoSaveEnabled', data => {

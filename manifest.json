@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
   "name": "FS Web Automate",
-  "version": "1.5.4",
+  "version": "1.5.4.1",
   "description": "Automates FS web data extraction.",
   "permissions": ["scripting", "activeTab", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
+  "options_page": "options.html",
   "action": {
     "default_title": "Extract and fill FamilySearch Data",
     "default_icon": "icon128.png" 

@@ -305,6 +305,7 @@
       }
 
       // 3. Find and click the Save button
+      // this block execution must depend on autoSaveEnabled option from options.html and options.js
       const saveButton = document.querySelector('[data-testid="source-save-button"]');
       if (
         saveButton &&

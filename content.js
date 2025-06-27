@@ -254,6 +254,7 @@
     const defaultIdx = choices.findIndex(c => c.isDefault);
     const OUTPUT_MAXLEN = 100;
 
+//here starts user prompt   
     let promptMsg = "Válassz egy opciót a következők közül:\n";
     promptMsg += choices.map((c, i) => {
       let shortOutput = c.output;
@@ -265,6 +266,8 @@
     promptMsg += `\n\nÍrd be a sorszámot (1-${choices.length}), vagy nyomj Enter az alapértelmezett kiválasztásához (${defaultIdx + 1}):`;
 
     let userInput = prompt(promptMsg, "");
+// here ends user input
+   
     let idx;
     if (userInput === null) {
       idx = -1;

@@ -280,9 +280,9 @@
       return;
     }
 
-    navigator.clipboard.writeText(choices[idx].output).then(() => {
+//    navigator.clipboard.writeText(choices[idx].output).then(() => {
       simulateEditAndFillSourceTitle(choices[idx].output);
-    });
+//    });
   }
 
   function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg átírása?") {

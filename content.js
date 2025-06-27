@@ -302,7 +302,7 @@
     }
 
     // 2. Fill in the input and save, with delay for edit field to appear
-    setTimeout(() => {
+    setTimeout(async () => {
       const input = document.querySelector('input[data-testid="source-title-field"]');
       if (input) {
         input.value = newValue;

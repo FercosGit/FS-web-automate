@@ -303,7 +303,7 @@ if (await getUserPromptEnabled()) {
 //    });
   }
 
-  function simulateEditAndFillSourceTitle(newValue = "vajon sikerült a szöveg átírása?") {
+  function simulateEditAndFillSourceTitle(newValue) {
     // 1. Find visible 'Szerkesztés' (Edit) button and click it
     const buttons = Array.from(document.querySelectorAll('button[data-testid^="source-button_edit"]'));
     const visibleButton = buttons.find(btn =>

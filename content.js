@@ -1,5 +1,5 @@
 // version 1.5.4.1 refactored by GitHub Co-pilot
-// option handling test
+// refactored to separate functions
 
 (function () {
 
